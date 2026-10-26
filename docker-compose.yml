@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: qescrow-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: qescrow_user
+      POSTGRES_PASSWORD: qescrow_secure_password
+      POSTGRES_DB: qescrow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qescrow_user -d qescrow_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: qescrow-backend
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://qescrow_user:qescrow_secure_password@postgres:5432/qescrow_db
+      SECRET_KEY: ${SECRET_KEY:-e4f91cbda89123b3ef39a83d71e21b824bc3b2a1a89c9d4b6c810d7e5f3a2c11}
+      ENVIRONMENT: production
+      DEBUG: "false"
+      BLOCKCHAIN_RPC_URL: http://hardhat:8545
+      CHAIN_ID: 31337
+      ALLOW_BLOCKCHAIN_SIMULATION: "true"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: qescrow-frontend
+    restart: always
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    ports:
+      - "3000:3000"
+
+  hardhat:
+    image: node:20-alpine
+    container_name: qescrow-hardhat
+    restart: always
+    working_dir: /app
+    volumes:
+      - ./contracts:/app
+    command: sh -c "npm install && npx hardhat node --hostname 0.0.0.0"
+    ports:
+      - "8545:8545"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,82 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.priv
+*secret*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+*.sqlite3
+*.db
+
+# Node & Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+.npm
+*.tsbuildinfo
+next-env.d.ts
+
+# Hardhat & Smart Contracts
+contracts/cache/
+contracts/artifacts/
+contracts/typechain/
+contracts/typechain-types/
+
+# Operating System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploads & Evidence
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and generated files
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+.env
+.env.*
+!.env.example
+.env
+.env.*
+!.env.example
+**/__pycache__/
+**/*.pyc
+**/venv/
+**/.venv/
+**/node_modules/
+**/*.db
+**/*.sqlite
+**/*.sqlite3
